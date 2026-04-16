@@ -59,19 +59,6 @@
                 <p class="small text-muted">Ao excluir sua conta, todos os seus pontos e histórico de coletas serão removidos permanentemente.</p>
                 <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="confirmDelete()">Excluir Minha Conta</button>
             </div>
-
-            <div class="bottom-nav-wrapper">
-            <div class="bottom-nav">
-                <a href="../index.html" class="nav-item"><i class="bi bi-house-door-fill"></i></a>
-                <a href="perfil.html" class="nav-item active"><i class="bi bi-person-fill"></i></a>
-                <div class="nav-center" style="display: flex; justify-content: center; align-items: center;">
-                    <img src="../images/logo-reconecta-navbar.svg" 
-                        alt="Logo" 
-                        style="width: px; height: px; margin-top: px;">
-                </div>
-                <a href="contato-suporte.html" class="nav-item"><i class="bi bi-chat-left-text-fill"></i></a>
-                <a href="resgatar-recompensa.html" class="nav-item"><i class="bi bi-shop"></i></a>
-            </div>
         </div>
         </div>
     </div>
@@ -84,13 +71,11 @@
         const form = document.getElementById('updateForm');
         const telInput = document.getElementById('telInput');
 
-        // 1. Carregar os dados atuais do utilizador (GET)
         try {
             const response = await fetch('/api/user/profile');
             const data = await response.json();
 
             if (response.ok) {
-                // Preenche os campos com os dados retornados pelo servidor
                 form.querySelector('input[type="text"]').value = data.nomeCompleto || '';
                 form.querySelector('input[type="email"]').value = data.email || '';
                 telInput.value = data.telefone || '';
@@ -100,8 +85,6 @@
         } catch (error) {
             console.error("Erro de rede:", error);
         }
-
-        // Máscara para o campo de telefone/telemóvel
         telInput.addEventListener('input', (e) => {
             let v = e.target.value.replace(/\D/g, "");
             v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
@@ -109,7 +92,7 @@
             e.target.value = v;
         });
 
-        // 2. Guardar as alterações do perfil (PUT)
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -124,8 +107,6 @@
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
-                        // Adiciona o token se estiveres a usar autenticação:
-                        // 'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },
                     body: JSON.stringify(updatedData)
                 });
@@ -143,8 +124,7 @@
             }
         });
     });
-
-    // 3. Eliminar Conta (DELETE)
+    
     async function confirmDelete() {
         if (confirm("Tens a certeza que desejas eliminar a tua conta? Todos os teus pontos e histórico serão removidos permanentemente.")) {
             try {
