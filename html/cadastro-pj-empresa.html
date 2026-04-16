@@ -211,31 +211,28 @@
 </div>
 
 <script>
+    // --- MÁSCARAS E BUSCA DE CEP (Já existentes no seu código) ---
     function mascaraCNPJ(i) {
-        var v = i.value;
-        if(isNaN(v[v.length-1])){ i.value = v.substring(0, v.length-1); return; }
-        i.setAttribute("maxlength", "18");
-        v = v.replace(/\D/g, "").replace(/^(\d{2})(\d)/, "$1.$2").replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3").replace(/\.(\d{3})(\d)/, ".$1/$2").replace(/(\d{4})(\d)/, "$1-$2");
+        var v = i.value.replace(/\D/g, "");
+        v = v.replace(/^(\d{2})(\d)/, "$1.$2");
+        v = v.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+        v = v.replace(/\.(\d{3})(\d)/, ".$1/$2");
+        v = v.replace(/(\d{4})(\d)/, "$1-$2");
         i.value = v;
     }
 
     function mascaraCEP(i) {
-        var v = i.value;
-        if(isNaN(v[v.length-1])){ i.value = v.substring(0, v.length-1); return; }
-        i.setAttribute("maxlength", "9");
-        v = v.replace(/\D/g, "").replace(/^(\d{5})(\d)/, "$1-$2");
+        var v = i.value.replace(/\D/g, "").replace(/^(\d{5})(\d)/, "$1-$2");
         i.value = v;
     }
 
     function buscarEndereco(cep) {
-        var cepLimpo = cep.replace(/\D/g, '');
+        const cepLimpo = cep.replace(/\D/g, '');
         if (cepLimpo.length === 8) {
-            var url = 'https://viacep.com.br/ws/' + cepLimpo + '/json/';
-            fetch(url)
-                .then(response => response.json())
+            fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`)
+                .then(res => res.json())
                 .then(data => {
                     if (!data.erro) {
-                        document.getElementById('endereco').value = data.logradouro;
                         document.getElementById('logradouro').value = data.logradouro;
                         document.getElementById('bairro').value = data.bairro;
                         document.getElementById('municipio').value = data.localidade;
@@ -244,43 +241,79 @@
                         document.getElementById('erro-cep').style.display = 'none';
                     } else {
                         document.getElementById('erro-cep').style.display = 'block';
-                        limparFormularioCep();
                     }
-                })
-                .catch(error => {
-                    console.error('Erro ao buscar CEP:', error);
-                    document.getElementById('erro-cep').style.display = 'block';
                 });
         }
     }
 
-    function limparFormularioCep() {
-        document.getElementById('endereco').value = "";
-        document.getElementById('logradouro').value = "";
-        document.getElementById('bairro').value = "";
-        document.getElementById('municipio').value = "";
-        document.getElementById('estado').value = "";
-    }
+    // --- LÓGICA DE ENVIO PARA O BACKEND (FETCH) ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.querySelector('form');
+
+        form.addEventListener('submit', async (event) => {
+            // 1. Validação Visual
+            if (!validarFormulario()) {
+                event.preventDefault();
+                return;
+            }
+
+            event.preventDefault(); // Impede o recarregamento
+
+            // 2. Captura dos dados
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+            
+            // 3. Tratamento especial para Checkboxes (Itens Aceitos)
+            // No backend, isto chegará como um array: ["celulares", "pilhas"]
+            data.itensAceitos = Array.from(formData.getAll('itens'));
+
+            try {
+                const response = await fetch('/api/company/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert("Dados da empresa guardados! Vamos agora cadastrar o representante.");
+                    // Redireciona para a segunda parte do cadastro PJ
+                    window.location.href = "cadastro-pj-representante.html";
+                } else {
+                    alert("Erro no cadastro: " + (result.message || "Verifique os dados da empresa."));
+                }
+            } catch (error) {
+                console.error("Erro na ligação:", error);
+                alert("Erro de conexão com o servidor.");
+            }
+        });
+    });
 
     function validarFormulario() {
-        var cnpj = document.getElementById("cnpj").value;
-        var erroCnpj = document.getElementById("erro-cnpj");
+        const cnpj = document.getElementById("cnpj").value;
+        const itens = document.querySelectorAll('input[name="itens"]:checked');
+        let valido = true;
+
         if (cnpj.length < 18) {
-            erroCnpj.style.display = "block";
-            document.getElementById("cnpj").focus();
-            return false;
-        }
-        
-        var checkboxes = document.querySelectorAll('input[name="itens"]:checked');
-        if (checkboxes.length === 0) {
-            document.getElementById("erro-itens").style.display = "block";
-            document.getElementById("erro-itens").classList.add("text-danger");
-            return false;
+            document.getElementById("erro-cnpj").style.display = "block";
+            valido = false;
+        } else {
+            document.getElementById("erro-cnpj").style.display = "none";
         }
 
-        erroCnpj.style.display = "none";
-        return true;
+        if (itens.length === 0) {
+            document.getElementById("erro-itens").style.display = "block";
+            valido = false;
+        } else {
+            document.getElementById("erro-itens").style.display = "none";
+        }
+
+        return valido;
     }
+</script>
 </script>
 </body>
 </html>
