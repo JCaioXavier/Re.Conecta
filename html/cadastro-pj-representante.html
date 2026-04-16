@@ -78,6 +78,7 @@
 </div>
 
 <script>
+    // --- MÁSCARAS JÁ EXISTENTES ---
     function mascaraCPF(i) {
         var v = i.value;
         if(isNaN(v[v.length-1])){ i.value = v.substring(0, v.length-1); return; }
@@ -96,6 +97,43 @@
         v = v.replace(/(\d)(\d{4})$/, "$1-$2");
         i.value = v;
     }
+
+    // --- LÓGICA DE ENVIO (NOVO) ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.querySelector('form');
+        const alertaErro = document.getElementById('alerta-erro');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Impede o envio tradicional
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+
+            try {
+                const response = await fetch('/api/company/register-representative', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert("Cadastro de empresa concluído com sucesso!");
+                    window.location.href = "login.html"; // Redireciona para o início
+                } else {
+                    // Mostra o alerta de erro se o CPF/Email já existir
+                    alertaErro.style.display = 'block';
+                    window.scrollTo(0, document.body.scrollHeight);
+                }
+            } catch (error) {
+                console.error("Erro na comunicação com o servidor:", error);
+                alert("Erro técnico ao processar cadastro.");
+            }
+        });
+    });
 </script>
 
 </body>
