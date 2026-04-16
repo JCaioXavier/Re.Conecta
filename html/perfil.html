@@ -108,8 +108,65 @@
       <a href="resgatar-recompensa.html" class="nav-item"><i class="bi bi-shop"></i></a>
     </div>
   </div>
-
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        // 1. CARREGAR RESUMO DO PERFIL (PONTOS E NOME)
+        try {
+            // Chamada à rota que definimos no UserController
+            const response = await fetch('/api/user/profile-summary', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Se estiveres a usar autenticação, envia o token:
+                    // 'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+
+                // Atualiza o valor dos pontos no card dinamicamente
+                const pointsElement = document.querySelector('.points-value');
+                if (pointsElement) {
+                    pointsElement.innerHTML = `<i class="bi bi-star-fill"></i> ${data.pontos || 0}`;
+                }
+
+                // Exemplo: se quiseres mostrar o nome do utilizador algures na página
+                // const nameElement = document.getElementById('user-name');
+                // if (nameElement) nameElement.innerText = data.nome;
+                
+            } else {
+                console.error("Não foi possível carregar os dados do perfil.");
+            }
+        } catch (error) {
+            console.error("Erro ao conectar ao servidor:", error);
+        }
+
+        // 2. LÓGICA DE SAIR DO APP (LOGOUT)
+        // Seleciona o botão de sair (que aponta para login.html)
+        const btnSair = document.querySelector('a[href="login.html"]');
+        
+        if (btnSair) {
+            btnSair.addEventListener('click', (e) => {
+                // Impede a navegação imediata para processar o logout
+                e.preventDefault();
+
+                if (confirm("Desejas realmente sair do Re.conecta?")) {
+                    // Limpa as credenciais guardadas no navegador
+                    localStorage.clear();
+                    sessionStorage.clear();
+
+                    // Opcional: Notificar o servidor sobre o logout
+                    // fetch('/api/auth/logout', { method: 'POST' });
+
+                    alert("Sessão encerrada com sucesso.");
+                    window.location.href = "login.html";
+                }
+            });
+        }
+    });
+</script>
 
 </body>
 </html>
