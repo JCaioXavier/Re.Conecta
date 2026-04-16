@@ -109,6 +109,8 @@
 </div>
 
 <script>
+
+    
     function toggleSenha(inputId, iconSpan) {
         const input = document.getElementById(inputId);
         const icon = iconSpan.querySelector('i');
@@ -171,6 +173,48 @@
 
         return valido;
     }
+
+    // Adicione este ID ao seu formulário no HTML: <form id="formCadastroPF" ...>
+    document.addEventListener('DOMContentLoaded', () => {
+    const form = document.querySelector('form');
+
+    form.addEventListener('submit', async (event) => {
+        // Primeiro, executa a sua validação local já existente
+        if (!validarFormulario()) {
+            event.preventDefault();
+            return;
+        }
+
+        // Impede o recarregamento da página para usar o Fetch
+        event.preventDefault();
+
+        // Captura os dados dos inputs
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+
+        try {
+            const response = await fetch('/api/users/register-pf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert("Cadastro realizado com sucesso!");
+                window.location.href = "login.html"; // Redireciona para o login
+            } else {
+                alert("Erro ao cadastrar: " + (result.message || "Verifique os dados."));
+            }
+        } catch (error) {
+            console.error("Erro na requisição:", error);
+            alert("Erro de conexão com o servidor.");
+        }
+    });
+});
 </script>
 
 </body>
