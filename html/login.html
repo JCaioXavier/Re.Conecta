@@ -99,12 +99,11 @@
         }
     }
 
-    // Lógica de submissão do formulário
     document.addEventListener('DOMContentLoaded', () => {
         const form = document.querySelector('form');
 
         form.addEventListener('submit', async (event) => {
-            event.preventDefault(); // Impede o envio tradicional do HTML
+            event.preventDefault();
 
             const formData = new FormData(form);
             const data = Object.fromEntries(formData);
@@ -121,12 +120,11 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    // Armazena o token e o nome do usuário se necessário
                     localStorage.setItem('token', result.token);
                     localStorage.setItem('userName', result.user);
                     
                     alert(`Bem-vindo, ${result.user}!`);
-                    window.location.href = "../index.html"; // Redireciona para a home
+                    window.location.href = "../index.html";
                 } else {
                     alert("Erro ao entrar: " + (result.message || "E-mail ou senha incorretos."));
                 }
