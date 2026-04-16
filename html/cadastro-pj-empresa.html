@@ -246,7 +246,6 @@
         }
     }
 
-    // --- LÓGICA DE ENVIO PARA O BACKEND (FETCH) ---
     document.addEventListener('DOMContentLoaded', () => {
         const form = document.querySelector('form');
 
@@ -257,14 +256,11 @@
                 return;
             }
 
-            event.preventDefault(); // Impede o recarregamento
+            event.preventDefault(); 
 
-            // 2. Captura dos dados
             const formData = new FormData(form);
             const data = Object.fromEntries(formData);
             
-            // 3. Tratamento especial para Checkboxes (Itens Aceitos)
-            // No backend, isto chegará como um array: ["celulares", "pilhas"]
             data.itensAceitos = Array.from(formData.getAll('itens'));
 
             try {
@@ -280,7 +276,6 @@
 
                 if (response.ok) {
                     alert("Dados da empresa guardados! Vamos agora cadastrar o representante.");
-                    // Redireciona para a segunda parte do cadastro PJ
                     window.location.href = "cadastro-pj-representante.html";
                 } else {
                     alert("Erro no cadastro: " + (result.message || "Verifique os dados da empresa."));
