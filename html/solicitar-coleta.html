@@ -94,40 +94,19 @@
                 <button type="submit" class="btn btn-reconecta w-100 mb-3 shadow-sm mt-4">Confirmar Solicitação</button>
             </form>
         </div>
-        <div class="bottom-nav-wrapper">
-            <div class="bottom-nav">
-                <a href="../index.html" class="nav-item"><i class="bi bi-house-door-fill"></i></a>
-                <a href="perfil.html" class="nav-item"><i class="bi bi-person-fill"></i></a>
-
-                <div class="nav-center">
-                    <div class="nav-center" style="display: flex; justify-content: center; align-items: center;">
-                        <img src="../images/logo-reconecta-navbar.svg" 
-                            alt="Logo" 
-                            style="width: px; height: px; margin-top: px;">
-                    </div>
-                </div>
-
-                <a href="contato-suporte.html" class="nav-item"><i class="bi bi-chat-left-text-fill"></i></a>
-                <a href="resgatar-recompensa.html" class="nav-item"><i class="bi bi-shop"></i>
-                </a>
-            </div>
         </div>
     </div>
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Seleciona o formulário de solicitação de coleta
         const form = document.querySelector('form');
 
         form.addEventListener('submit', async (event) => {
-            event.preventDefault(); // Impede o recarregamento da página
+            event.preventDefault();
 
-            // Captura todos os dados do formulário
             const formData = new FormData(form);
             const data = Object.fromEntries(formData);
 
-            // Tratamento especial se tiveres checkboxes para selecionar os eletrónicos (ex: name="itens")
-            // Isto transforma as opções selecionadas num array: ["celular", "pilhas"]
             if (formData.has('itens')) {
                 data.itens = Array.from(formData.getAll('itens'));
             }
@@ -138,9 +117,6 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
-                        // Importante: Como esta ação requer que o utilizador esteja logado,
-                        // deves enviar o token de autenticação (se já o estiveres a guardar no login)
-                        // 'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },
                     body: JSON.stringify(data)
                 });
@@ -149,7 +125,6 @@
 
                 if (response.ok) {
                     alert("Coleta solicitada com sucesso! Acompanhe o estado no seu histórico.");
-                    // Redireciona o utilizador para o perfil ou para o histórico de coletas
                     window.location.href = "perfil.html";
                 } else {
                     alert("Erro ao solicitar coleta: " + (result.message || "Verifica os dados preenchidos."));
