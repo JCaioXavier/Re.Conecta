@@ -5,27 +5,26 @@ const router = express.Router();
 const UserController = require('../controllers/UserController');
 const CollectController = require('../controllers/CollectController');
 const AuthController = require('../controllers/AuthController');
-const CompanyController = require('../controllers/CompanyController'); // Corrigido aqui
+const CompanyController = require('../controllers/CompanyController');
 
-// Autenticar
+// Rotas de Autenticação
 router.post('/api/auth/login', AuthController.login);
-router.post('/api/auth/forgot-password', AuthController.forgotPassword); 
+router.post('/api/auth/forgot-password', AuthController.forgotPassword);
 
-// Utilizador (Pessoa Física)
+// Rotas de Usuario
 router.post('/api/users/register-pf', UserController.registerPF);
-router.get('/api/user/profile', UserController.getProfile); 
-router.put('/api/user/update', UserController.updateProfile);
-
+router.get('/api/user/profile', UserController.getProfile);
 router.get('/api/user/profile-summary', UserController.getProfileSummary);
+router.put('/api/user/update', UserController.updateProfile);
 router.delete('/api/user/delete', UserController.deleteAccount);
 
-// Empresa (Pessoa Jurídica)
+// Rotas de Empresa
 router.post('/api/company/register', CompanyController.registerPJ);
+router.post('/api/company/register-representative', CompanyController.registerRepresentative);
 
-// Coleta
+// Rotas de Coleta
 router.post('/api/collect/request', CollectController.createRequest);
-router.get('/api/collect/history', CollectController.listHistory); 
-router.delete('/api/collect/cancel/:idColeta', CollectController.cancelRequest); 
+router.get('/api/collect/history', CollectController.listHistory);
+router.delete('/api/collect/cancel/:idColeta', CollectController.cancelRequest);
 
-// Exportar as rotas
 module.exports = router;
