@@ -16,6 +16,9 @@ router.post('/api/users/register-pf', UserController.registerPF);
 router.get('/api/user/profile', UserController.getProfile); 
 router.put('/api/user/update', UserController.updateProfile);
 
+router.get('/api/user/profile-summary', UserController.getProfileSummary);
+router.delete('/api/user/delete', UserController.deleteAccount);
+
 // Empresa (Pessoa Jurídica)
 router.post('/api/company/register', CompanyController.registerPJ);
 
