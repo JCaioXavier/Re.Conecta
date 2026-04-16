@@ -98,7 +98,6 @@
         i.value = v;
     }
 
-    // --- LÓGICA DE ENVIO (NOVO) ---
     document.addEventListener('DOMContentLoaded', () => {
         const form = document.querySelector('form');
         const alertaErro = document.getElementById('alerta-erro');
@@ -122,9 +121,8 @@
 
                 if (response.ok) {
                     alert("Cadastro de empresa concluído com sucesso!");
-                    window.location.href = "login.html"; // Redireciona para o início
+                    window.location.href = "login.html";
                 } else {
-                    // Mostra o alerta de erro se o CPF/Email já existir
                     alertaErro.style.display = 'block';
                     window.scrollTo(0, document.body.scrollHeight);
                 }
