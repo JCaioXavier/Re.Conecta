@@ -5,9 +5,7 @@ const UserController = {
         return res.status(201).json({ message: "Utilizador registado com sucesso!" });
     },
 
-    // Função adicionada
     async getProfile(req, res) {
-        // Lógica para ir buscar o perfil à base de dados (usando o ID do token, por exemplo)
         return res.json({ 
             nomeCompleto: "Ryan Austin", 
             email: "ryan.austin@email.com", 
@@ -22,7 +20,6 @@ const UserController = {
 
     async getProfileSummary(req, res) {
         try {
-            // No futuro, estes dados virão de uma consulta à base de dados
             return res.json({
                 nome: "Ryan Austin",
                 pontos: 260
@@ -32,10 +29,8 @@ const UserController = {
         }
     },
 
-    // NOVA FUNÇÃO: Lógica para eliminar a conta do utilizador
     async deleteAccount(req, res) {
         try {
-            // Lógica para remover o registo da base de dados (ex: User.delete)
             console.log("A eliminar conta do utilizador...");
             
             return res.json({ message: "A tua conta foi eliminada com sucesso." });
