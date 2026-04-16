@@ -79,20 +79,91 @@
 
 </div>
 
-
-
 <script>
-    function confirmDelete() {
-        if (confirm("Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.")) {
-            alert("Conta excluída com sucesso. Redirecionando...");
-            window.location.href = "login.html";
+    document.addEventListener('DOMContentLoaded', async () => {
+        const form = document.getElementById('updateForm');
+        const telInput = document.getElementById('telInput');
+
+        // 1. Carregar os dados atuais do utilizador (GET)
+        try {
+            const response = await fetch('/api/user/profile');
+            const data = await response.json();
+
+            if (response.ok) {
+                // Preenche os campos com os dados retornados pelo servidor
+                form.querySelector('input[type="text"]').value = data.nomeCompleto || '';
+                form.querySelector('input[type="email"]').value = data.email || '';
+                telInput.value = data.telefone || '';
+            } else {
+                console.error("Erro ao carregar dados do perfil:", data.message);
+            }
+        } catch (error) {
+            console.error("Erro de rede:", error);
+        }
+
+        // Máscara para o campo de telefone/telemóvel
+        telInput.addEventListener('input', (e) => {
+            let v = e.target.value.replace(/\D/g, "");
+            v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
+            v = v.replace(/(\d)(\d{4})$/, "$1-$2");
+            e.target.value = v;
+        });
+
+        // 2. Guardar as alterações do perfil (PUT)
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const updatedData = {
+                nomeCompleto: form.querySelector('input[type="text"]').value,
+                email: form.querySelector('input[type="email"]').value,
+                telefone: telInput.value
+            };
+
+            try {
+                const response = await fetch('/api/user/update', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                        // Adiciona o token se estiveres a usar autenticação:
+                        // 'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(updatedData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert("Dados atualizados com sucesso!");
+                } else {
+                    alert("Erro na atualização: " + (result.message || "Tenta novamente."));
+                }
+            } catch (error) {
+                console.error("Erro ao enviar dados:", error);
+                alert("Erro de ligação ao servidor.");
+            }
+        });
+    });
+
+    // 3. Eliminar Conta (DELETE)
+    async function confirmDelete() {
+        if (confirm("Tens a certeza que desejas eliminar a tua conta? Todos os teus pontos e histórico serão removidos permanentemente.")) {
+            try {
+                const response = await fetch('/api/user/delete', {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert("A tua conta foi eliminada. Esperamos ver-te em breve!");
+                    localStorage.clear();
+                    window.location.href = "login.html";
+                } else {
+                    alert("Não foi possível eliminar a conta neste momento.");
+                }
+            } catch (error) {
+                console.error("Erro na eliminação:", error);
+            }
         }
     }
-
-    document.getElementById('updateForm').onsubmit = function(e) {
-        e.preventDefault();
-        alert("Dados atualizados com sucesso!");
-    };
 </script>
 </body>
 </html>
